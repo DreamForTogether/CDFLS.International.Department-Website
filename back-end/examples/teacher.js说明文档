@@ -44,4 +44,13 @@ static async getSearchSuggestion(keyWord)异步函数，返回值是一个string
   参数：keyWord 类型值是string
   作用：根据用户所收搜的keyWord来返回提示信息。比如：用户输入"张"，会返回所有在服务器中名字含有张老师的名字。找不到返回空数组。
 
-async addTeacherToServer()异步函数，返回值是一个boolean
+async addTeacherToServer()异步函数，返回值是一个boolean。
+  作用：添加一个新的老师，返回true和false来判断是否添加成功。
+
+static async removeTeacherById(teacherId)异步函数，返回值是一个boolean。
+  作用：根据teacher这个类的属性中的id查找老师并且删除，返回true和false来判断是否删除成功。
+
+static async removeTeacherByName(teacherName)异步函数，返回值是一个boolean。
+  作用：根据teacher这个类的属性中的name查找老师并且删除，返回true和false来判断是否删除成功。
+
+
