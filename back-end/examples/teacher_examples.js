@@ -1,15 +1,17 @@
 //引入这个类
 const teacher = require('./teacher');
+const mongoose = require("mongoose");
+const connectUrl = "xxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 //创建一个类来输出
 //第一种constructor
-/*const teacherObject1 = new teacher("姚望溪舟", 0, "cn.bing.com", ["ap"], [0, 1, 2]);
+/*const teacherObject1 = new teacher("test", 0, "cn.bing.com", ["ap"], [0, 1, 2]);
 console.log(teacherObject1.toJson());*/
 
 //第二种constructor
 /*const jsonString =
 `{
-    "name": "姚望溪舟",
+    "name": "billy",
     "id": 0,
     "avatarsUrl": "cn.bing.com",
     "teacherType": ["ap"],
@@ -21,7 +23,7 @@ console.log(teacherObject2.toJson());*/
 //第三种constructor
 /*const Json =
 {
-    "name": "姚望溪舟",
+    "name": "murphy",
     "id": 0,
     "avatarsUrl": "cn.bing.com",
     "teacherType": ["ap"],
@@ -35,10 +37,12 @@ async function runAsyncMethods()
 {
     try
     {
-        /*const allTeachers = await teacher.getTeacherLists();
+        await mongoose.connect(connectUrl);
+
+        const allTeachers = await teacher.getTeacherLists();
         console.log("所有的老师");
         for (let i = 0; i < allTeachers.length; i++)
-            console.log(allTeachers[i].toString());*/
+            console.log(allTeachers[i].toString());
 
         /*const idTeacher = await teacher.getTeacherById(0);
         console.log("teacherId为0的老师");
@@ -58,8 +62,8 @@ async function runAsyncMethods()
         else
             console.log("添加失败");*/
 
-        /*const nameTeacher = await teacher.getTeacherByName("张其");
-        console.log("所有名称为张其的老师:");
+        /*const nameTeacher = await teacher.getTeacherByName("John");
+        console.log("所有名称为John的老师:");
         console.log(nameTeacher.toString());*/
 
         /*const typeTeacher = await teacher.getTeacherByType("ap");
@@ -84,7 +88,7 @@ async function runAsyncMethods()
 
         /*const updateTeacherJson = 
         {
-            "name": "张微潇",
+            "name": "john",
             "id": 0,
             "avatarsUrl": "exsample.com",
             "teacherType": ["alevel", "ap"],
@@ -98,14 +102,14 @@ async function runAsyncMethods()
 
         /*const updateTeacherJson2 = 
         {
-            "name": "张其",
+            "name": "mars",
             "id": 0,
             "avatarsUrl": "test.com",
             "teacherType": ["alevel", "ap"],
             "classesId": [3, 4, 5]
         }
         const updateTeacher2 = teacher.parseTeacherByJson(updateTeacherJson2);
-        if(updateTeacher2.updateTeacherByName("张微潇"))
+        if(updateTeacher2.updateTeacherByName("murphy"))
             console.log("成功更改");
         else
             console.log("更改失败");*/
