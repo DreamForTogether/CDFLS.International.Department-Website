@@ -1,8 +1,6 @@
 //引入库
 //需要安装库：npm install mongoose
 const mongoose = require("mongoose");
-const connectUrl = "mongodb+srv://3564028649:JuZOZdN8WLlCONx8@gratiano.iuy275q.mongodb.net/cflswebsite";
-
 //更根据Json的值来写
 const teachersSchema = new mongoose.Schema({name:String, id:Number, avatarsUrl:String, teacherType:Array, classesId:Array});
 const teachers = mongoose.model("teachers", teachersSchema);
@@ -47,8 +45,6 @@ class teacher
         {
             try
             {
-                //链接我们的账户
-                await mongoose.connect(connectUrl);
                 const teachersList = await teachers.find({});
                 var arr = [];
                 for (const Teacher of teachersList)
@@ -59,7 +55,6 @@ class teacher
                 return arr;
             }
             catch (error) {console.error("Error:", error); return null;}
-            finally {mongoose.connection.close();}
         }
         return await trigger();
     }
@@ -71,13 +66,10 @@ class teacher
         {
             try
             {
-                //链接我们的账户
-                await mongoose.connect(connectUrl);
                 const returnTeacher = await teachers.findOne({id:teacherId});
                 return teacher.parseTeacherByJson(returnTeacher);
             }
             catch (error) {console.error(error); return null;}
-            finally {mongoose.connection.close();}
         }
         return await trigger();
     }
@@ -89,13 +81,10 @@ class teacher
         {
             try
             {
-                //链接我们的账户
-                await mongoose.connect(connectUrl);
                 const returnTeacher = await teachers.findOne({name:teacherName});
                 return teacher.parseTeacherByJson(returnTeacher);
             }
             catch (error) {console.error(error); return null;}
-            finally {mongoose.connection.close();}
         }
         return await trigger();
     }
@@ -107,8 +96,6 @@ class teacher
         {
             try
             {
-                //链接我们的账户
-                await mongoose.connect(connectUrl);
                 const allTeachers = await teacher.getTeacherLists();
                 if (allTeachers != null)
                 {
@@ -123,7 +110,6 @@ class teacher
                 else return null;
             }
             catch (error) {console.error("Error:", error); return null;}
-            finally {mongoose.connection.close();}
         }
         return await trigger();
     }
@@ -135,8 +121,6 @@ class teacher
         {
             try
             {
-                //连接我们的数据库
-                await mongoose.connect(connectUrl);
                 //先获取所有的Teacher:
                 const teacherList = await teacher.getTeacherLists();
                 var returnList = [];
@@ -152,7 +136,6 @@ class teacher
                 else return null;
             }
             catch (error) {console.log(error); return null;}
-            finally {mongoose.connection.close();}
         }
         return await trigger();
     }
@@ -165,14 +148,12 @@ class teacher
         {
             try
             {
-                //连接我们的数据库
-                await mongoose.connect(connectUrl);
                 //先获取所有的Teacher:
                 const teacherList = await teacher.getTeacherLists();
                 if (teacherList != null)
                 {
                     //因为在await teacher.getTeacherLists()已经关闭了服务器，所有我们需要再次连接
-                    await mongoose.connect(connectUrl);
+                    
                     var nameList = [], idList = [];
                     for (let i = 0; i < teacherList.length; i++)
                     {
@@ -210,7 +191,6 @@ class teacher
                 else return false;
             }
             catch (error) {console.log(error); return false;}
-            finally {mongoose.connection.close();}
         }
         return await trigger();
     }
@@ -222,15 +202,12 @@ class teacher
         {
             try
             {
-                //连接我们的账户
-                await mongoose.connect(connectUrl);
                 await teachers.findOne({id:teacherId}).deleteOne().then((result) => {}).catch((error) => {
                     console.error(error);
                     return false;
                 });
             }
             catch (error) {console.error("Error:", error); return false;}
-            finally {mongoose.connection.close();} //关闭连接 
         }
         return await trigger();
     }
@@ -241,16 +218,13 @@ class teacher
         async function trigger()
         {
             try
-            {
-                //连接我们的账户
-                await mongoose.connect(connectUrl);
+            { 
                 await teachers.findOne({name:teacherName}).deleteOne().then((result) => {}).catch((error) => {
                     console.error(error);
                     return false;
                 });
             }
             catch (error) {console.error("Error:", error); return false;}
-            finally {mongoose.connection.close();} //关闭连接 
         }
         return await trigger();
     }
@@ -262,10 +236,7 @@ class teacher
         async function trigger()
         {
             try
-            {
-                await teacher.removeTeacherById(teacherId)   
-                //连接我们的账户
-                await mongoose.connect(connectUrl);       
+            {          
                 const newTeacher = new teachers({
                     name: saveThis.name,
                     id: saveThis.id,
@@ -274,14 +245,12 @@ class teacher
                     classesId: saveThis.classesId
                 });
                 // 保存数据实例到数据库
-                await mongoose.connect(connectUrl); 
                 await newTeacher.save().then((result) => {return true;}).catch((error) => {
                     console.error(error);
                     return false;
                 });
             }
             catch (error) {console.error("Error:", error); return false;}
-            finally {mongoose.connection.close();} //关闭连接    
         }
         return await trigger();
     }
@@ -294,9 +263,6 @@ class teacher
         {
             try
             {
-                await teacher.removeTeacherByName(teacherName)   
-                //连接我们的账户
-                await mongoose.connect(connectUrl);       
                 const newTeacher = new teachers({
                     name: saveThis.name,
                     id: saveThis.id,
@@ -305,14 +271,12 @@ class teacher
                     classesId: saveThis.classesId
                 });
                 // 保存数据实例到数据库
-                await mongoose.connect(connectUrl); 
                 await newTeacher.save().then((result) => {return true;}).catch((error) => {
                     console.error(error);
                     return false;
                 });
             }
-            catch (error) {console.error("Error:", error); return false;}
-            finally {mongoose.connection.close();} //关闭连接    
+            catch (error) {console.error("Error:", error); return false;} 
         }
         return await trigger();
     }
