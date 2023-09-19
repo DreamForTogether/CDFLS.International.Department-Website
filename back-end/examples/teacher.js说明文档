@@ -53,4 +53,10 @@ static async removeTeacherById(teacherId)异步函数，返回值是一个boolea
 static async removeTeacherByName(teacherName)异步函数，返回值是一个boolean。
   作用：根据teacher这个类的属性中的name查找老师并且删除，返回true和false来判断是否删除成功。
 
+async updateTeacherById(teacherId)异步函数，返回值是一个boolean。
+  作用：根据teacher这个类的属性中的id查找老师并且更新信息，返回true和false来判断是否更新成功。
 
+async updateTeacherByName(teacherName)异步函数，返回值是一个boolean。
+  作用：根据teacher这个类的属性中的name查找老师并且更新信息，返回true和false来判断是否更新成功。
+
+toJson()
