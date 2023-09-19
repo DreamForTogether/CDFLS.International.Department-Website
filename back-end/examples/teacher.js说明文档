@@ -1,1 +1,20 @@
+######################################################################
 
+teacher.js 里面含有teacher这个类
+
+teacher类的属性：
+  name 教师名称 类型string
+  id 教师id 类型int
+  avatarsUrl 头像的URL 类型string
+  teacherType 教师的类型: 比如(班主任;AP老师;班主任) 类型string[]
+  classesId 教的课程的id 类型int[]
+
+teacher类里面的方法
+调用函数可以参考同目录下的 teacher_examples.js
+构造函数： 
+  函数：constructor(name, id, avatarsUrl, teacherType, classesId) 返回值 void。
+  调用实例：const teacherObject1 = new teacher("murphy", 0, "cn.bing.com", ["ap"], [0, 1, 2]);
+
+  函数：static parseTeacherByString(jsonString) 返回值为teacher类。其中参数是jsonString 类型是string。
+  调用实例：const jsonString = `{ "name": "murphy", "id": 0, "avatarsUrl": "cn.bing.com", "teacherType": ["ap"], "classesId": [0, 1, 2]}`;
+const teacherObject2 = teacher.parseTeacherByString(jsonString);
