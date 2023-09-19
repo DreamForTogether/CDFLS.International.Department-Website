@@ -60,4 +60,7 @@ async updateTeacherByName(teacherName)异步函数，返回值是一个boolean�
   作用：根据teacher这个类的属性中的name查找老师并且更新信息，返回true和false来判断是否更新成功。
 
 toJson()返回值是一个JSONObject
-  作用：
+  作用：把这个类用Json的格式（同时也是服务器上保存的格式）来返回。
+
+toString()返回值是string
+  作用：返回一个包含对象的字符串表示的字符串。这个字符串通常用于调试、日志记录和显示对象的信息
