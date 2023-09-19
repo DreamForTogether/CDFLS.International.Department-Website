@@ -1,7 +1,7 @@
 //引入库
 //需要安装库：npm install mongoose
 const mongoose = require("mongoose");
-const connectUrl = "xxxxxxxxxxxxxxxxxxxxxxxxxx";
+const connectUrl = "mongodb+srv://3564028649:JuZOZdN8WLlCONx8@gratiano.iuy275q.mongodb.net/cflswebsite";
 
 //更根据Json的值来写
 const teachersSchema = new mongoose.Schema({name:String, id:Number, avatarsUrl:String, teacherType:Array, classesId:Array});
@@ -266,7 +266,6 @@ class teacher
                 await teacher.removeTeacherById(teacherId)   
                 //连接我们的账户
                 await mongoose.connect(connectUrl);       
-                console.log(saveThis);
                 const newTeacher = new teachers({
                     name: saveThis.name,
                     id: saveThis.id,
@@ -298,7 +297,6 @@ class teacher
                 await teacher.removeTeacherByName(teacherName)   
                 //连接我们的账户
                 await mongoose.connect(connectUrl);       
-                console.log(saveThis);
                 const newTeacher = new teachers({
                     name: saveThis.name,
                     id: saveThis.id,
