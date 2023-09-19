@@ -1,7 +1,7 @@
 //引入库
 //需要安装库：npm install mongoose
 const mongoose = require("mongoose");
-const connectUrl = "xxxxxxx";
+const connectUrl = "xxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 //更根据Json的值来写
 const teachersSchema = new mongoose.Schema({name:String, id:Number, avatarsUrl:String, teacherType:Array, classesId:Array});
@@ -129,7 +129,7 @@ class teacher
     }
 
     //显示精准搜索的关键词提示 异步方法
-    static async getSearchSuggestion(keyWords)
+    static async getSearchSuggestion(keyWord)
     {
         async function trigger()
         {
@@ -144,7 +144,7 @@ class teacher
                 {
                     for (let i = 0; i < teacherList.length; i++)
                     {
-                        if (teacherList[i].name.indexOf(keyWords) >= 0)
+                        if (teacherList[i].name.indexOf(keyWord) >= 0)
                             returnList.push(teacherList[i].name);
                     }
                     return returnList;
@@ -216,7 +216,7 @@ class teacher
     }
 
     //从服务器删除老师 异步方法
-    static async removeTeacherFromSever(teacherId)
+    static async removeTeacherById(teacherId)
     {
         async function trigger()
         {
@@ -235,15 +235,67 @@ class teacher
         return await trigger();
     }
 
+    //从服务器删除老师 异步方法
+    static async removeTeacherByName(teacherName)
+    {
+        async function trigger()
+        {
+            try
+            {
+                //连接我们的账户
+                await mongoose.connect(connectUrl);
+                await teachers.findOne({name:teacherName}).deleteOne().then((result) => {}).catch((error) => {
+                    console.error(error);
+                    return false;
+                });
+            }
+            catch (error) {console.error("Error:", error); return false;}
+            finally {mongoose.connection.close();} //关闭连接 
+        }
+        return await trigger();
+    }
+
     //更改老师的信息 异步方法
-    async replace(teacherId) //待测试
+    async updateTeacherById(teacherId)
     {
         const saveThis = this;
         async function trigger()
         {
             try
             {
-                await teacher.removeTeacherFromSever(teacherId)   
+                await teacher.removeTeacherById(teacherId)   
+                //连接我们的账户
+                await mongoose.connect(connectUrl);       
+                console.log(saveThis);
+                const newTeacher = new teachers({
+                    name: saveThis.name,
+                    id: saveThis.id,
+                    avatarsUrl: saveThis.avatarsUrl,
+                    teacherType: saveThis.teacherType,
+                    classesId: saveThis.classesId
+                });
+                // 保存数据实例到数据库
+                await mongoose.connect(connectUrl); 
+                await newTeacher.save().then((result) => {return true;}).catch((error) => {
+                    console.error(error);
+                    return false;
+                });
+            }
+            catch (error) {console.error("Error:", error); return false;}
+            finally {mongoose.connection.close();} //关闭连接    
+        }
+        return await trigger();
+    }
+
+    //更改老师的信息 异步方法
+    async updateTeacherByName(teacherName)
+    {
+        const saveThis = this;
+        async function trigger()
+        {
+            try
+            {
+                await teacher.removeTeacherByName(teacherName)   
                 //连接我们的账户
                 await mongoose.connect(connectUrl);       
                 console.log(saveThis);
