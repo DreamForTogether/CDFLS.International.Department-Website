@@ -1,311 +1,345 @@
-//引入库
-//需要安装库：npm install mongoose
 const mongoose = require("mongoose");
-//更根据Json的值来写
-const teachersSchema = new mongoose.Schema({name:String, id:Number, avatarsUrl:String, teacherType:Array, classesId:Array});
+const express = require("express");
+const cors = require("cors");
+
+const app = express();
+const port = 3000;
+
+const newTeacher = "new";
+const updateTeacher = "update";
+const delectTeacher = "delete";
+
+// Define the schema and model
+const teachersSchema = new mongoose.Schema({
+    name: String,
+    id: Number,
+    avatarsUrl: String,
+    teacherType: Array,
+    classesId: Array,
+});
 const teachers = mongoose.model("teachers", teachersSchema);
+// MongoDB connection URL
+const connectUrl ="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
+app.use(express.json());
+app.use(cors());
 
 class teacher
 {
-    //name 教师名称 类型string
-    //id 教师id 类型int
-    //avatarsUrl 头像的URL 类型string
-    //teacherType 教师的类型:班主任;AP老师;班主任 类型string[]
-    //classesId 教的课程 类型int[]
-
-    //第一种constructor
-    constructor(name, id, avatarsUrl, teacherType, classesId)
+    //读取所有教师的函数
+    static async read(req, res)
     {
-        this.name = name;
-        this.id = id;
-        this.avatarsUrl = avatarsUrl;
-        this.teacherType = teacherType || [];
-        this.classesId = classesId || [];
-    }
-
-    //第二钟constructor 用string类型的构造
-    static parseTeacherByString(jsonString)
-    {
-        const jsonCode = JSON.parse(jsonString);
-        const { name, id, avatarsUrl, teacherType, classesId } = jsonCode;
-        return new teacher(name, id, avatarsUrl, teacherType, classesId);
-    }
-
-    //第三种constructor 用JSON类型构造
-    static parseTeacherByJson(JSON)
-    {
-        const { name, id, avatarsUrl, teacherType, classesId } = JSON;
-        return new teacher(name, id, avatarsUrl, teacherType, classesId);
-    }
-
-    //返回所有的Teacher 异步方法
-    static async getTeacherLists()
-    {
-        async function trigger()
+        try
         {
-            try
+            const teacherId = req.query.id;
+            const teacherName = req.query.name;
+            const teacherType = req.query.type;
+            var returnJson = {error_msg:"", list:[]};
+
+            //根据teacherId搜索
+            if (teacherId != null) 
             {
-                const teachersList = await teachers.find({});
-                var arr = [];
-                for (const Teacher of teachersList)
+                const searchTeacher = await teachers.findOne({id:teacherId});
+                if (searchTeacher != null)
+                    returnJson.list.push(searchTeacher);  
+                else
+                    returnJson.error_msg = "Cannot find the teacher";
+            }
+            else if (teacherName != null && teacherType == null) //根据teacherName搜索
+            {
+                const searchTeacher = await teachers.find({});
+                if (searchTeacher != null)
                 {
-                    const temp = teacher.parseTeacherByJson(Teacher);
-                    arr.push(temp);
-                }
-                return arr;
-            }
-            catch (error) {console.error("Error:", error); return null;}
-        }
-        return await trigger();
-    }
-
-    //根据id返回对应的Teacher 异步方法
-    static async getTeacherById(teacherId)
-    {
-        async function trigger()
-        {
-            try
-            {
-                const returnTeacher = await teachers.findOne({id:teacherId});
-                return teacher.parseTeacherByJson(returnTeacher);
-            }
-            catch (error) {console.error(error); return null;}
-        }
-        return await trigger();
-    }
-
-    //根据名称来返回老师 异步方法
-    static async getTeacherByName(teacherName)
-    {
-        async function trigger()
-        {
-            try
-            {
-                const returnTeacher = await teachers.findOne({name:teacherName});
-                return teacher.parseTeacherByJson(returnTeacher);
-            }
-            catch (error) {console.error(error); return null;}
-        }
-        return await trigger();
-    }
-
-    //根据类型返回老师 异步方法
-    static async getTeacherByType(typeName)
-    {
-        async function trigger()
-        {
-            try
-            {
-                const allTeachers = await teacher.getTeacherLists();
-                if (allTeachers != null)
-                {
-                    var returnTeachers = [];
-                    for (let i = 0; i < allTeachers.length; i++)
+                    for (const Teacher of searchTeacher)
                     {
-                        if (allTeachers[i].teacherType.includes(typeName))
-                            returnTeachers.push(allTeachers[i]);
-                    }
-                    return returnTeachers;
-                }
-                else return null;
-            }
-            catch (error) {console.error("Error:", error); return null;}
-        }
-        return await trigger();
-    }
-
-    //显示精准搜索的关键词提示 异步方法
-    static async getSearchSuggestion(keyWord)
-    {
-        async function trigger()
-        {
-            try
-            {
-                //先获取所有的Teacher:
-                const teacherList = await teacher.getTeacherLists();
-                var returnList = [];
-                if (teacherList != null)
-                {
-                    for (let i = 0; i < teacherList.length; i++)
-                    {
-                        if (teacherList[i].name.indexOf(keyWord) >= 0)
-                            returnList.push(teacherList[i].name);
-                    }
-                    return returnList;
-                }
-                else return null;
-            }
-            catch (error) {console.log(error); return null;}
-        }
-        return await trigger();
-    }
-
-    //添加老师到服务器 异步方法
-    async addTeacherToServer()
-    {
-        const saveThis = this;
-        async function trigger()
-        {
-            try
-            {
-                //先获取所有的Teacher:
-                const teacherList = await teacher.getTeacherLists();
-                if (teacherList != null)
-                {
-                    //因为在await teacher.getTeacherLists()已经关闭了服务器，所有我们需要再次连接
-                    
-                    var nameList = [], idList = [];
-                    for (let i = 0; i < teacherList.length; i++)
-                    {
-                        nameList.push(teacherList[i].name);
-                        idList.push(teacherList[i].id);
-                    }
-                
-                    if (nameList.includes(saveThis.name)) {console.log("该教师已经被定义"); return false;}
-                    else
-                    {
-                        //防止id重名
-                        var newId = idList[idList.length - 1] + 1;
-                        for (let i = 0; i < idList.length - 1; i++)
-                        {
-                            if (idList[i + 1] - idList[i] !== 1)
-                            {
-                                newId = idList[i] + 1;
-                                break;
-                            }
-                        }
-                        const newTeacher = new teachers({
-                            name: saveThis.name,
-                            id: newId,
-                            avatarsUrl: saveThis.avatarsUrl,
-                            teacherType: saveThis.teacherType,
-                            classesId: saveThis.classesId
-                        });
-                        // 保存数据实例到数据库
-                        await newTeacher.save().then((result) => {return true;}).catch((error) => {
-                            console.error(error);
-                            return false;
-                        });
+                        if (Teacher.name.indexOf(teacherName) >= 0)
+                            returnJson.list.push(Teacher);
                     }
                 }
-                else return false;
+                else
+                    returnJson.error_msg = "Cannot find the teacher";
             }
-            catch (error) {console.log(error); return false;}
-        }
-        return await trigger();
-    }
-
-    //从服务器删除老师 异步方法
-    static async removeTeacherById(teacherId)
-    {
-        async function trigger()
-        {
-            try
+            else if (teacherName != null && teacherType != null) //根据teacherName和teacherType搜索
             {
-                await teachers.findOne({id:teacherId}).deleteOne().then((result) => {}).catch((error) => {
-                    console.error(error);
-                    return false;
-                });
+                const searchTeacher = await teachers.find({});
+                if (searchTeacher != null)
+                {
+                    for (const Teacher of searchTeacher)
+                    {
+                        if (Teacher.name.indexOf(teacherName) >= 0 && Teacher.teacherType.includes(teacherType))
+                            returnJson.list.push(Teacher);
+                    }
+                    if(returnJson.list.length == 0)
+                        returnJson.error_msg = "Cannot find the teacher";
+                }
+                else
+                    returnJson.error_msg = "Cannot find the teacher";
             }
-            catch (error) {console.error("Error:", error); return false;}
+            else if (teacherName == null && teacherType != null) //根据teacherType搜索
+            {
+                const searchTeacher = await teachers.find({});
+                if (searchTeacher != null)
+                {
+                    for (const Teacher of searchTeacher)
+                    {
+                        if (Teacher.teacherType.includes(teacherType))
+                            returnJson.list.push(Teacher);
+                    }
+                    if (returnJson.list.length == 0)
+                        returnJson.error_msg = "Cannot find the teacher";
+                }
+                else
+                    returnJson.error_msg = "Cannot find the teacher";
+            }
+            else
+            {
+                const searchTeacher = await teachers.find({});
+                if (searchTeacher != null)
+                {
+                    for (const Teacher of searchTeacher)
+                            returnJson.list.push(Teacher);
+                    if (returnJson.list.length == 0)
+                        returnJson.error_msg = "Cannot find the teacher";
+                }
+                else
+                    returnJson.error_msg = "Cannot find the teacher";
+            }
+            res.status(200).json(returnJson);
         }
-        return await trigger();
+        catch (error) {res.status(500).json({error_msg:"" + error, list:[]});}
     }
 
-    //从服务器删除老师 异步方法
-    static async removeTeacherByName(teacherName)
+    //获取搜索提示词
+    static async smartBox(req, res)
     {
-        async function trigger()
+        try
         {
-            try
-            { 
-                await teachers.findOne({name:teacherName}).deleteOne().then((result) => {}).catch((error) => {
-                    console.error(error);
-                    return false;
-                });
+            const searchName = req.query.name;
+            const number = req.query.number || 5;
+            var i = 1;
+
+            var returnJson = {error_msg:"", list:[]}
+            const searchTeacher = await teachers.find({});
+            if (searchName == null) {returnJson.error_msg = "The parameter (searchName) is required";}
+            else if (searchTeacher != null)
+            {
+                for (const Teacher of searchTeacher)
+                {
+                    if (Teacher.name.indexOf(searchName) >= 0) {returnJson.list.push(Teacher.name); i++}
+                    if (i > number) break;
+                }
             }
-            catch (error) {console.error("Error:", error); return false;}
+            else {returnJson.error_msg = "The parameter (searchName) is required", returnJson.list = []}
+            res.status(200).json(returnJson);
         }
-        return await trigger();
+        catch (error) {res.status(500).json({error_msg:"" + error, list:[]});}
     }
 
-    //更改老师的信息 异步方法
-    async updateTeacherById(teacherId)
+    //添加一个老师
+    static async create(req, res)
     {
-        const saveThis = this;
-        async function trigger()
+        try
         {
-            try
-            {          
+            var {name, avatarsUrl, teacherType, classesId, code} = req.body;
+            var returnJson = {error_msg:"", phase:""};
+
+            if (avatarsUrl == null)
+            {avatarsUrl = "https://cn.bing.com/images/search?view=detailV2&ccid=xA5QX2cr&id=0A79C1A8D133565949BD5B204FD24D70BFE3D547&thid=OIP.xA5QX2crc3fR5d0DIH-oDQAAAA&mediaurl=https%3a%2f%2fpic1.zhimg.com%2f50%2fv2-6afa72220d29f045c15217aa6b275808_hd.jpg%3fsource%3d1940ef5c&exph=300&expw=300&q=%e9%bb%98%e8%ae%a4%e5%a4%b4%e5%83%8f&simid=607995725626298830&FORM=IRPRST&ck=4D8E1CA5519A8FF520685968378DDF08&selectedIndex=28&ajaxhist=0&ajaxserp=0"}
+            if (name == null)
+            {returnJson.error_msg = "The parameter (name) is required"; returnJson.phase = "Cannot create a teacher";}
+            else if (teacherType == null)
+            {returnJson.error_msg = "The parameter (teacherType) is required"; returnJson.phase = "Cannot create a teacher";}
+            else if (classesId == null)
+            {returnJson.error_msg = "The parameter (classesId) is required"; returnJson.phase = "Cannot create a teacher";}
+            else if (code == null)
+            {returnJson.error_msg = "The parameter (code) is required"; returnJson.phase = "Cannot create a teacher";}
+            else if (code == newTeacher)
+            {
+                var idList = [];
+                const searchTeacher = await teachers.find({});
+                for (const Teacher of searchTeacher)
+                    idList.push(Teacher.id);
+                idList.sort(function(a, b) {return a - b;});
+                var newId = idList[idList.length - 1] + 1;
+                for (let i = 0; i < idList.length - 1; i++)
+                {
+                    if (idList[i + 1] - idList[i] !== 1)
+                    {
+                        newId = idList[i] + 1;
+                        break;
+                    }
+                }
                 const newTeacher = new teachers({
-                    name: saveThis.name,
-                    id: saveThis.id,
-                    avatarsUrl: saveThis.avatarsUrl,
-                    teacherType: saveThis.teacherType,
-                    classesId: saveThis.classesId
+                    name: name,
+                    id: newId,
+                    avatarsUrl: avatarsUrl,
+                    teacherType: teacherType,
+                    classesId: classesId
                 });
-                // 保存数据实例到数据库
-                await newTeacher.save().then((result) => {return true;}).catch((error) => {
-                    console.error(error);
-                    return false;
+                await newTeacher.save().then((result) =>
+                {
+                    returnJson.error_msg = "";
+                    returnJson.phase = "Adding successfully. The new teacher id is:" + newId;
+                }).catch((error) =>
+                {
+                    returnJson.error_msg = "" + error;
+                    returnJson.phase = "Cannot create a teacher" + newId;
                 });
             }
-            catch (error) {console.error("Error:", error); return false;}
+            else {returnJson.error_msg = "The code is invalid "; returnJson.phase = "Cannot create a teacher";}
+            res.status(200).json(returnJson);
         }
-        return await trigger();
+        catch (error) {res.status(500).json({error_msg:"" + error, phase:"Cannot create the teacher"});}
     }
 
-    //更改老师的信息 异步方法
-    async updateTeacherByName(teacherName)
+    //修改老师的信息
+    static async update(req, res)
     {
-        const saveThis = this;
-        async function trigger()
+        try
         {
-            try
+            var {originalName, originalId, newName, newAvatarsUrl, newTeacherType, newClassesId, code} = req.body;
+            var returnJson = {error_msg:"", phase:""};
+            if (originalId == null && originalName == null)
             {
-                const newTeacher = new teachers({
-                    name: saveThis.name,
-                    id: saveThis.id,
-                    avatarsUrl: saveThis.avatarsUrl,
-                    teacherType: saveThis.teacherType,
-                    classesId: saveThis.classesId
-                });
-                // 保存数据实例到数据库
-                await newTeacher.save().then((result) => {return true;}).catch((error) => {
-                    console.error(error);
-                    return false;
-                });
+                returnJson.error_msg = "The parameter (originalName or originalId) is required";
+                returnJson.phase = "Cannot update the teacher";
             }
-            catch (error) {console.error("Error:", error); return false;} 
-        }
-        return await trigger();
+            else if (code == null)
+            {
+                returnJson.error_msg = "The parameter (code) is required";
+                returnJson.phase = "Cannot update the teacher";
+            }
+            else if (code == updateTeacher)
+            {
+                if (originalId != null)  //根据原来的id查找老师
+                {
+                    const certainTeacher = await teachers.findOne({id:originalId});
+                    await teachers.findOne({id:originalId}).deleteOne().then((result) => {}).catch((error) =>
+                    {
+                        returnJson.error_msg = "" + error;
+                        returnJson.phase = "Cannot update the teacher";
+                    });
+                    const newTeacher = new teachers({
+                        name: newName != null ? newName : certainTeacher.name,
+                        id: certainTeacher.id,
+                        avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
+                        teacherType: newTeacherType != null ? newTeacherType : certainTeacher.teacherType,
+                        classesId: newClassesId != null ? newClassesId : certainTeacher.classesId
+                    });
+                    await newTeacher.save().then((result) =>
+                    {
+                        returnJson.error_msg = "";
+                        returnJson.phase = "Updating successfully";
+                    }).catch((error) =>
+                    {
+                        returnJson.error_msg = "" + error;
+                        returnJson.phase = "Cannot update the teacher";
+                    });
+                }
+                else if (originalName != null)  //根据原来的name查找老师
+                {
+                    const certainTeacher = await teachers.findOne({name:originalName});
+                    await teachers.findOne({name:originalName}).deleteOne().then((result) => {}).catch((error) =>
+                    {
+                        returnJson.error_msg = "" + error;
+                        returnJson.phase = "Cannot update the teacher";
+                    });
+                    const newTeacher = new teachers({
+                        name: newName != null ? newName : certainTeacher.name,
+                        id: certainTeacher.id,
+                        avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
+                        teacherType: newTeacherType != null ? newTeacherType : certainTeacher.teacherType,
+                        classesId: newClassesId != null ? newClassesId : certainTeacher.classesId
+                    });
+                    await newTeacher.save().then((result) =>
+                    {
+                        returnJson.error_msg = "";
+                        returnJson.phase = "Updating successfully";
+                    }).catch((error) =>
+                    {
+                        returnJson.error_msg = "" + error;
+                        returnJson.phase = "Cannot update the teacher";
+                    });
+                }
+            }
+            else {returnJson.error_msg = "The code is invalid "; returnJson.phase = "Cannot update the teacher";}
+            res.status(200).json(returnJson);
+        } catch (error) {res.status(500).json({error_msg:"" + error, phase:"Cannot update the teacher"});} 
     }
 
-    //以Json的格式向外界输出
-    toJson()
+
+    //删除指定的老师
+    static async delete(req, res)
     {
-        var jsonCode =
+        try
         {
-            "name": this.name,
-            "id": this.id,
-            "avatarsUrl": this.avatarsUrl,
-            "teacherType": this.teacherType.map(classId => classId.toString()),
-            "classes": this.classesId.map(classId => classId.toString())
-        };
-        return JSON.stringify(jsonCode);
-    }
+            var {name, id, code} = req.body;
+            var returnJson = {error_msg:"", phase:""};
 
-    //以String的类型输出
-    toString()
-    {
-        var string = "";
-        string += "教师名称: " + this.name + "\n";
-        string += "教师ID: " + this.id + "\n";
-        string += "教师头像: " + this.avatarsUrl + "\n";
-        string += "教师类型: " + this.teacherType + "\n";
-        string += "教授课程ID: " + this.classesId + "\n";
-        return string;
+            if (name == null && id == null)
+            {
+                returnJson.error_msg = "The parameter (name or id) is required";
+                returnJson.phase = "Cannot delete the teacher";
+            }
+            else if (code == null)
+            {
+                returnJson.error_msg = "The parameter (code) is required";
+                returnJson.phase = "Cannot delete the teacher";
+            }
+            else if (code == delectTeacher)
+            {
+                if (id != null)  //根据原来的id查找老师
+                {
+                    await teachers.findOne({id:id}).deleteOne().then((result) => 
+                    {
+                        returnJson.error_msg = "";
+                        returnJson.phase = "Deleting the teacher successfully";
+                    }).catch((error) =>
+                    {
+                        returnJson.error_msg = "" + error;
+                        returnJson.phase = "Cannot delect the teacher";
+                    });
+                }
+                else if (name != null) //根据原来的name查找老师
+                {
+                    await teachers.findOne({name:name}).deleteOne().then((result) => 
+                    {
+                        returnJson.error_msg = "";
+                        returnJson.phase = "Deleting the teacher successfully";
+                    }).catch((error) =>
+                    {
+                        returnJson.error_msg = "" + error;
+                        returnJson.phase = "Cannot delete the teacher";
+                    });
+                }
+            }
+            else
+            {
+                returnJson.error_msg = "The code is Invalid";
+                returnJson.phase = "Cannot delete the teacher";
+            }
+
+            res.status(200).json(returnJson);
+        }
+        catch (error) {}
     }
 }
 
-module.exports = teacher;
+async function runAsyncMethods()
+{
+    try
+    {
+        //连接账户
+        await mongoose.connect(connectUrl);
+
+        app.get('/teachers/read', teacher.read);
+        app.get('/teachers/searchSmartBox', teacher.smartBox);
+        app.post('/teachers/create', teacher.create);
+        app.put('/teachers/update', teacher.update);
+        app.delete('/teachers/delete', teacher.delete);
+    }
+    catch (error) {console.error(error.message);}
+}
+
+runAsyncMethods();
+app.listen(port, () => console.log(`Listening on port ${port}`));
