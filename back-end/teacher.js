@@ -14,12 +14,13 @@ const teachersSchema = new mongoose.Schema({
     name: String,
     id: Number,
     avatarsUrl: String,
+    description: String,
     teacherType: Array,
     classesId: Array,
 });
 const teachers = mongoose.model("teachers", teachersSchema);
 // MongoDB connection URL
-const connectUrl ="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+const connectUrl ="mongodb+srv://3564028649:JuZOZdN8WLlCONx8@gratiano.iuy275q.mongodb.net/cflswebsite";
 
 app.use(express.json());
 app.use(cors());
@@ -140,11 +141,13 @@ class teacher
     {
         try
         {
-            var {name, avatarsUrl, teacherType, classesId, code} = req.body;
+            var {name, avatarsUrl, description, teacherType, classesId, code} = req.body;
             var returnJson = {error_msg:"", phase:""};
 
             if (avatarsUrl == null)
-            {avatarsUrl = "https://cn.bing.com/images/search?view=detailV2&ccid=xA5QX2cr&id=0A79C1A8D133565949BD5B204FD24D70BFE3D547&thid=OIP.xA5QX2crc3fR5d0DIH-oDQAAAA&mediaurl=https%3a%2f%2fpic1.zhimg.com%2f50%2fv2-6afa72220d29f045c15217aa6b275808_hd.jpg%3fsource%3d1940ef5c&exph=300&expw=300&q=%e9%bb%98%e8%ae%a4%e5%a4%b4%e5%83%8f&simid=607995725626298830&FORM=IRPRST&ck=4D8E1CA5519A8FF520685968378DDF08&selectedIndex=28&ajaxhist=0&ajaxserp=0"}
+                avatarsUrl = "https://cn.bing.com/images/search?view=detailV2&ccid=xA5QX2cr&id=0A79C1A8D133565949BD5B204FD24D70BFE3D547&thid=OIP.xA5QX2crc3fR5d0DIH-oDQAAAA&mediaurl=https%3a%2f%2fpic1.zhimg.com%2f50%2fv2-6afa72220d29f045c15217aa6b275808_hd.jpg%3fsource%3d1940ef5c&exph=300&expw=300&q=%e9%bb%98%e8%ae%a4%e5%a4%b4%e5%83%8f&simid=607995725626298830&FORM=IRPRST&ck=4D8E1CA5519A8FF520685968378DDF08&selectedIndex=28&ajaxhist=0&ajaxserp=0";
+            if (description == null)
+                description = "暂无简介";
             if (name == null)
             {returnJson.error_msg = "The parameter (name) is required"; returnJson.phase = "Cannot create a teacher";}
             else if (teacherType == null)
@@ -155,12 +158,17 @@ class teacher
             {returnJson.error_msg = "The parameter (code) is required"; returnJson.phase = "Cannot create a teacher";}
             else if (code == newTeacher)
             {
-                var idList = [];
+                var idList = [], newId = 0;
                 const searchTeacher = await teachers.find({});
                 for (const Teacher of searchTeacher)
                     idList.push(Teacher.id);
-                idList.sort(function(a, b) {return a - b;});
-                var newId = idList[idList.length - 1] + 1;
+                if (idList.length == 0)
+                    newId = 0;
+                else
+                {
+                    idList.sort(function(a, b) {return a - b;});
+                    newId = idList[idList.length - 1] + 1;
+                }
                 for (let i = 0; i < idList.length - 1; i++)
                 {
                     if (idList[i + 1] - idList[i] !== 1)
@@ -173,6 +181,7 @@ class teacher
                     name: name,
                     id: newId,
                     avatarsUrl: avatarsUrl,
+                    description: description,
                     teacherType: teacherType,
                     classesId: classesId
                 });
@@ -197,7 +206,7 @@ class teacher
     {
         try
         {
-            var {originalName, originalId, newName, newAvatarsUrl, newTeacherType, newClassesId, code} = req.body;
+            var {originalName, originalId, newName, newAvatarsUrl, newDescription, newTeacherType, newClassesId, code} = req.body;
             var returnJson = {error_msg:"", phase:""};
             if (originalId == null && originalName == null)
             {
@@ -223,6 +232,7 @@ class teacher
                         name: newName != null ? newName : certainTeacher.name,
                         id: certainTeacher.id,
                         avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
+                        description: newDescription != null ? newDescription : certainTeacher.description,
                         teacherType: newTeacherType != null ? newTeacherType : certainTeacher.teacherType,
                         classesId: newClassesId != null ? newClassesId : certainTeacher.classesId
                     });
@@ -248,6 +258,7 @@ class teacher
                         name: newName != null ? newName : certainTeacher.name,
                         id: certainTeacher.id,
                         avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
+                        description: newDescription != null ? newDescription : certainTeacher.description,
                         teacherType: newTeacherType != null ? newTeacherType : certainTeacher.teacherType,
                         classesId: newClassesId != null ? newClassesId : certainTeacher.classesId
                     });
