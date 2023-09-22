@@ -5,6 +5,11 @@
 写前端的人需要下载网络测试工具 建议是 "postman".
 写后端的人也需要下载网络测试攻击 建议是 "postman"; 同时你们需要下载JavaScript的编译器: Node.js
 
+同时我们在JavaScript需要3个库:
+"mongoose"; "express"; "cors";
+可以在命令行中用
+npm install <库名> 来下载
+
 附:
   postman下载地址: "https://www.postman.com/downloads/"
   Node.js下载地址: "https://nodejs.org/en/download"
