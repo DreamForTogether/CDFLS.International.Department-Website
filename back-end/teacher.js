@@ -15,7 +15,7 @@ const teachersSchema = new mongoose.Schema({
     id: Number,
     avatarsUrl: String,
     description: String,
-    teacherType: Array,
+    type: Array,
     classesId: Array,
 });
 const teachers = mongoose.model("teachers", teachersSchema);
@@ -34,7 +34,7 @@ class teacher
         {
             const teacherId = req.query.id;
             const teacherName = req.query.name;
-            const teacherType = req.query.type;
+            const type = req.query.type;
             var returnJson = {error_msg:"", list:[]};
 
             //根据teacherId搜索
@@ -46,7 +46,7 @@ class teacher
                 else
                     returnJson.error_msg = "Cannot find the teacher";
             }
-            else if (teacherName != null && teacherType == null) //根据teacherName搜索
+            else if (teacherName != null && type == null) //根据teacherName搜索
             {
                 const searchTeacher = await teachers.find({});
                 if (searchTeacher != null)
@@ -60,14 +60,14 @@ class teacher
                 else
                     returnJson.error_msg = "Cannot find the teacher";
             }
-            else if (teacherName != null && teacherType != null) //根据teacherName和teacherType搜索
+            else if (teacherName != null && type != null) //根据teacherName和type搜索
             {
                 const searchTeacher = await teachers.find({});
                 if (searchTeacher != null)
                 {
                     for (const Teacher of searchTeacher)
                     {
-                        if (Teacher.name.indexOf(teacherName) >= 0 && Teacher.teacherType.includes(teacherType))
+                        if (Teacher.name.indexOf(teacherName) >= 0 && Teacher.type.includes(type))
                             returnJson.list.push(Teacher);
                     }
                     if(returnJson.list.length == 0)
@@ -76,14 +76,14 @@ class teacher
                 else
                     returnJson.error_msg = "Cannot find the teacher";
             }
-            else if (teacherName == null && teacherType != null) //根据teacherType搜索
+            else if (teacherName == null && type != null) //根据type搜索
             {
                 const searchTeacher = await teachers.find({});
                 if (searchTeacher != null)
                 {
                     for (const Teacher of searchTeacher)
                     {
-                        if (Teacher.teacherType.includes(teacherType))
+                        if (Teacher.type.includes(type))
                             returnJson.list.push(Teacher);
                     }
                     if (returnJson.list.length == 0)
@@ -141,7 +141,7 @@ class teacher
     {
         try
         {
-            var {name, avatarsUrl, description, teacherType, classesId, code} = req.body;
+            var {name, avatarsUrl, description, type, classesId, code} = req.body;
             var returnJson = {error_msg:"", phase:""};
 
             if (avatarsUrl == null)
@@ -150,8 +150,8 @@ class teacher
                 description = "暂无简介";
             if (name == null)
             {returnJson.error_msg = "The parameter (name) is required"; returnJson.phase = "Cannot create a teacher";}
-            else if (teacherType == null)
-            {returnJson.error_msg = "The parameter (teacherType) is required"; returnJson.phase = "Cannot create a teacher";}
+            else if (type == null)
+            {returnJson.error_msg = "The parameter (type) is required"; returnJson.phase = "Cannot create a teacher";}
             else if (classesId == null)
             {returnJson.error_msg = "The parameter (classesId) is required"; returnJson.phase = "Cannot create a teacher";}
             else if (code == null)
@@ -182,7 +182,7 @@ class teacher
                     id: newId,
                     avatarsUrl: avatarsUrl,
                     description: description,
-                    teacherType: teacherType,
+                    type: type,
                     classesId: classesId
                 });
                 await newTeacher.save().then((result) =>
@@ -206,7 +206,7 @@ class teacher
     {
         try
         {
-            var {originalName, originalId, newName, newAvatarsUrl, newDescription, newTeacherType, newClassesId, code} = req.body;
+            var {originalName, originalId, newName, newAvatarsUrl, newDescription, newtype, newClassesId, code} = req.body;
             var returnJson = {error_msg:"", phase:""};
             if (originalId == null && originalName == null)
             {
@@ -233,7 +233,7 @@ class teacher
                         id: certainTeacher.id,
                         avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
                         description: newDescription != null ? newDescription : certainTeacher.description,
-                        teacherType: newTeacherType != null ? newTeacherType : certainTeacher.teacherType,
+                        type: newtype != null ? newtype : certainTeacher.type,
                         classesId: newClassesId != null ? newClassesId : certainTeacher.classesId
                     });
                     await newTeacher.save().then((result) =>
@@ -259,7 +259,7 @@ class teacher
                         id: certainTeacher.id,
                         avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
                         description: newDescription != null ? newDescription : certainTeacher.description,
-                        teacherType: newTeacherType != null ? newTeacherType : certainTeacher.teacherType,
+                        type: newtype != null ? newtype : certainTeacher.type,
                         classesId: newClassesId != null ? newClassesId : certainTeacher.classesId
                     });
                     await newTeacher.save().then((result) =>
