@@ -5,6 +5,7 @@ const cors = require("cors");
 const app = express();
 const port = 3000;
 
+//密码
 const newTeacher = "new";
 const updateTeacher = "update";
 const delectTeacher = "delete";
@@ -20,7 +21,7 @@ const teachersSchema = new mongoose.Schema({
 });
 const teachers = mongoose.model("teachers", teachersSchema);
 // MongoDB connection URL
-const connectUrl ="";
+const connectUrl = "xxxxxxxxxxxxxxxxxxxx";
 
 app.use(express.json());
 app.use(cors());
@@ -113,7 +114,7 @@ class teacher
             {
                 for (const Teacher of searchTeacher)
                 {
-                    if (Teacher.name.indexOf(searchName) >= 0) {returnJson.list.push(Teacher.name); i++}
+                    if (Teacher.name.indexOf(searchName) != -1) {returnJson.list.push(Teacher.name); i++}
                     if (i > number) break;
                 }
             }
@@ -207,57 +208,57 @@ class teacher
             }
             else if (code == updateTeacher)
             {
-                if (originalId != null)  //根据原来的id查找老师
+                if (originalId != null)
                 {
-                    const certainTeacher = await teachers.findOne({id:originalId});
-                    await teachers.findOne({id:originalId}).deleteOne().then((result) => {}).catch((error) =>
+                    const certainTeacher = await teachers.findOne({id: originalId});
+                    if (!certainTeacher)
                     {
-                        returnJson.error_msg = "" + error;
+                        returnJson.error_msg = "Cannot find the teacher";
                         returnJson.phase = "Cannot update the teacher";
-                    });
-                    const newTeacher = new teachers({
-                        name: newName != null ? newName : certainTeacher.name,
-                        id: certainTeacher.id,
-                        avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
-                        description: newDescription != null ? newDescription : certainTeacher.description,
-                        type: newType != null ? newType : certainTeacher.type,
-                        classesId: newClassesId != null ? newClassesId : certainTeacher.classesId
-                    });
-                    await newTeacher.save().then((result) =>
+                    }
+                    else
                     {
+                        await teachers.findOneAndUpdate({id: originalId},
+                        {
+                            $set:
+                            {
+                                name: newName != null ? newName : certainTeacher.name,
+                                id: certainTeacher.id,
+                                avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
+                                description: newDescription != null ? newDescription : certainTeacher.description,
+                                type: newType != null ? newType : certainTeacher.type,
+                                classesId: newClassesId != null ? newClassesId : certainTeacher.classesId
+                            }
+                        });
                         returnJson.error_msg = "";
-                        returnJson.phase = "Updating successfully";
-                    }).catch((error) =>
-                    {
-                        returnJson.error_msg = "" + error;
-                        returnJson.phase = "Cannot update the teacher";
-                    });
+                        returnJson.phase = "Update the teacher successfully";
+                    }
                 }
-                else if (originalName != null)  //根据原来的name查找老师
+                else if (originalName != null)
                 {
-                    const certainTeacher = await teachers.findOne({name:originalName});
-                    await teachers.findOne({name:originalName}).deleteOne().then((result) => {}).catch((error) =>
+                    const certainTeacher = await teachers.findOne({ name: originalName });
+                    if (!certainTeacher)
                     {
-                        returnJson.error_msg = "" + error;
+                        returnJson.error_msg = "Cannot find the teacher";
                         returnJson.phase = "Cannot update the teacher";
-                    });
-                    const newTeacher = new teachers({
-                        name: newName != null ? newName : certainTeacher.name,
-                        id: certainTeacher.id,
-                        avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
-                        description: newDescription != null ? newDescription : certainTeacher.description,
-                        type: newType != null ? newType : certainTeacher.type,
-                        classesId: newClassesId != null ? newClassesId : certainTeacher.classesId
-                    });
-                    await newTeacher.save().then((result) =>
+                    }
+                    else
                     {
+                        await teachers.findOneAndUpdate({ name: originalName },
+                        {
+                            $set:
+                            {
+                                name: newName != null ? newName : certainTeacher.name,
+                                id: certainTeacher.id,
+                                avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
+                                description: newDescription != null ? newDescription : certainTeacher.description,
+                                type: newType != null ? newType : certainTeacher.type,
+                                classesId: newClassesId != null ? newClassesId : certainTeacher.classesId
+                            }
+                        });
                         returnJson.error_msg = "";
-                        returnJson.phase = "Updating successfully";
-                    }).catch((error) =>
-                    {
-                        returnJson.error_msg = "" + error;
-                        returnJson.phase = "Cannot update the teacher";
-                    });
+                        returnJson.phase = "Update the teacher successfully";
+                    }
                 }
             }
             else {returnJson.error_msg = "The code is invalid "; returnJson.phase = "Cannot update the teacher";}
