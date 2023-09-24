@@ -20,7 +20,7 @@ const teachersSchema = new mongoose.Schema({
 });
 const teachers = mongoose.model("teachers", teachersSchema);
 // MongoDB connection URL
-const connectUrl ="mongodb+srv://3564028649:JuZOZdN8WLlCONx8@gratiano.iuy275q.mongodb.net/cflswebsite";
+const connectUrl ="";
 
 app.use(express.json());
 app.use(cors());
