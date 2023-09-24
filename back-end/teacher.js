@@ -329,7 +329,7 @@ async function runAsyncMethods()
         //连接账户
         await mongoose.connect(connectUrl);
 
-        app.get('/teachers/read', teacher.read);
+        app.get('/teachers/search', teacher.read);
         app.get('/teachers/searchSmartBox', teacher.smartBox);
         app.post('/teachers/create', teacher.create);
         app.put('/teachers/update', teacher.update);
