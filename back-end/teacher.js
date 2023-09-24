@@ -278,7 +278,6 @@ class teacher
         } catch (error) {res.status(500).json({error_msg:"" + error, phase:"Cannot update the teacher"});} 
     }
 
-
     //删除指定的老师
     static async delete(req, res)
     {
@@ -332,7 +331,7 @@ class teacher
 
             res.status(200).json(returnJson);
         }
-        catch (error) {}
+        catch (error) {res.status(500).json({error_msg:"" + error, phase:"Cannot update the teacher"});}
     }
 }
 
