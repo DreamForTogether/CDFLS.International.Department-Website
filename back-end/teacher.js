@@ -34,7 +34,7 @@ class teacher
         {
             const teacherId = req.query.id;
             const teacherName = req.query.name;
-            const type = req.query.type;
+            const teacherType = req.query.type;
             var returnJson = {error_msg:"", list:[]};
 
             //根据teacherId搜索
@@ -46,64 +46,51 @@ class teacher
                 else
                     returnJson.error_msg = "Cannot find the teacher";
             }
-            else if (teacherName != null && type == null) //根据teacherName搜索
+            else if (teacherName == null && teacherType == null) //无参数的时输出全部的
             {
                 const searchTeacher = await teachers.find({});
                 if (searchTeacher != null)
                 {
                     for (const Teacher of searchTeacher)
-                    {
-                        if (Teacher.name.indexOf(teacherName) >= 0)
-                            returnJson.list.push(Teacher);
-                    }
+                        returnJson.list.push(Teacher);
                 }
-                else
-                    returnJson.error_msg = "Cannot find the teacher";
-            }
-            else if (teacherName != null && type != null) //根据teacherName和type搜索
-            {
-                const searchTeacher = await teachers.find({});
-                if (searchTeacher != null)
-                {
-                    for (const Teacher of searchTeacher)
-                    {
-                        if (Teacher.name.indexOf(teacherName) >= 0 && Teacher.type.includes(type))
-                            returnJson.list.push(Teacher);
-                    }
-                    if(returnJson.list.length == 0)
-                        returnJson.error_msg = "Cannot find the teacher";
-                }
-                else
-                    returnJson.error_msg = "Cannot find the teacher";
-            }
-            else if (teacherName == null && type != null) //根据type搜索
-            {
-                const searchTeacher = await teachers.find({});
-                if (searchTeacher != null)
-                {
-                    for (const Teacher of searchTeacher)
-                    {
-                        if (Teacher.type.includes(type))
-                            returnJson.list.push(Teacher);
-                    }
-                    if (returnJson.list.length == 0)
-                        returnJson.error_msg = "Cannot find the teacher";
-                }
-                else
-                    returnJson.error_msg = "Cannot find the teacher";
             }
             else
             {
-                const searchTeacher = await teachers.find({});
-                if (searchTeacher != null)
+                var tempTeacher = await teachers.find({});
+                function selectName(certainJson)
                 {
-                    for (const Teacher of searchTeacher)
-                            returnJson.list.push(Teacher);
-                    if (returnJson.list.length == 0)
-                        returnJson.error_msg = "Cannot find the teacher";
+                    var arr = [];
+                    for (const Teacher of certainJson)
+                    {
+                        if (Teacher.name.indexOf(teacherName) != -1)
+                            arr.push(Teacher);
+                    }
+                    return arr;
                 }
-                else
+                function selectType(certainJson)
+                {
+                    var arr = [];
+                    for (const Teacher of certainJson)
+                    {
+                        if (Teacher.type.includes(teacherType))
+                            arr.push(Teacher);
+                    }
+                    return arr;
+                }
+
+                if (teacherName != null)
+                    tempTeacher = selectName(tempTeacher);
+                if (teacherType != null)
+                    tempTeacher = selectType(tempTeacher);
+
+                if (tempTeacher.length == 0)
                     returnJson.error_msg = "Cannot find the teacher";
+                else
+                {
+                    for (const Teacher of tempTeacher)
+                        returnJson.list.push(Teacher);
+                }
             }
             res.status(200).json(returnJson);
         }
@@ -206,7 +193,7 @@ class teacher
     {
         try
         {
-            var {originalName, originalId, newName, newAvatarsUrl, newDescription, newtype, newClassesId, code} = req.body;
+            var {originalName, originalId, newName, newAvatarsUrl, newDescription, newType, newClassesId, code} = req.body;
             var returnJson = {error_msg:"", phase:""};
             if (originalId == null && originalName == null)
             {
@@ -233,7 +220,7 @@ class teacher
                         id: certainTeacher.id,
                         avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
                         description: newDescription != null ? newDescription : certainTeacher.description,
-                        type: newtype != null ? newtype : certainTeacher.type,
+                        type: newType != null ? newType : certainTeacher.type,
                         classesId: newClassesId != null ? newClassesId : certainTeacher.classesId
                     });
                     await newTeacher.save().then((result) =>
@@ -259,7 +246,7 @@ class teacher
                         id: certainTeacher.id,
                         avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
                         description: newDescription != null ? newDescription : certainTeacher.description,
-                        type: newtype != null ? newtype : certainTeacher.type,
+                        type: newType != null ? newType : certainTeacher.type,
                         classesId: newClassesId != null ? newClassesId : certainTeacher.classesId
                     });
                     await newTeacher.save().then((result) =>
