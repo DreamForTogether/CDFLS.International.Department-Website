@@ -1,5 +1,58 @@
 ###############################################################################################################
 
+此文档帮助前端的程序员来生成界面或者与服务器参数
+注:
+  可选参数: 可以不用带这些参数进行请求。
+  必选参数: 必须得带上这些参数，不然会报错。
+
+###############################################################################################################
+
 关于教师:
 
-接口/teachers/search 
+接口/teachers/search GET请求方法
+  作用: 用于用户的搜索老师的功能
+  参数:
+  id: 老师id。 本搜索方式拥有最高的优先级，返回结果只有一个，如果传入了id，其他的参数会视为无效。可选参数
+  name: 老师的名称。 可选参数
+  type: 老师的类型，(值为 ap: ap老师; ALevel: alevel老师; SinoCanada: 中加老师; HeadTeacher: 班主任; superintendent: 主管; administrator: 管理层;其一) 可选参数
+    如果上面的参数都没有传入: 显示所有的在服务器的老师。
+
+  实例: /teachers/search?name=张&type=ap，会显示所有名字中含有张并且是ap老师的所有老师。
+
+接口/teachers/searchSmartBox GET请求方法
+  作用: 用户在搜索框中输入后显示提示词
+  参数:
+  name: 老师的名称。 如果用户在搜索框中输入 "张" 会显示含有张字的老师作为参考(准确搜索) 必填参数
+  number: 最多显示的个数。 如果含有 "张" 字的老师过多，我们可以加上number参数限制提示词的个数，没有这个参数默认值是5。 可选参数
+
+接口/teachers/create POST请求方式
+  作用: 添加一个老师
+  参数(Json格式):
+  name (string类型): 新老师的名称。 必填参数
+  avatarsUrl (string类型): 老师头像链接。不填会有一个默认头像的图像链接。 可选参数
+  description (string类型): 老师介绍。不填的默认值是 "暂无简介"。 可选参数
+  type (string类型数组)：老师的类型，(值为 ap: ap老师; ALevel: alevel老师; SinoCanada: 中加老师; HeadTeacher: 班主任; superintendent: 主管; administrator: 管理层;其一) 必填参数
+  classesId (int类型数组): 老师教的课程id。 必填参数(但是这个数组的长度可以为0) 
+  code (string类型): 密码。只有密码对了才能创建成功。 必填参数
+
+接口/teachers/update PUT请求方式
+  作用: 更新一个老师
+  参数(Json格式):
+  originalName: 需要更改的原来老师的名称。 可选参数
+  originalId: 需要更改老师的id号。 可选参数(但是originalName或者originalId必须要有一个传入，两个都传入以id号作为查找方式)
+  newName (string类型): 更改新老师的名称。 可选参数
+  newAvatarsUrl (string类型): 更改老师头像链接。不填会有一个默认头像的图像链接。 可选参数
+  newDescription (string类型): 更改老师介绍。不填的默认值是 "暂无简介"。 可选参数
+  newType (string类型数组)：更改老师的类型，(值为 ap: ap老师; ALevel: alevel老师; SinoCanada: 中加老师; HeadTeacher: 班主任; superintendent: 主管; administrator: 管理层;其一) 可选参数
+  newClassesId (int类型数组): 更改老师教的课程id。可选参数(但是这个数组的长度可以为0)
+  code (string类型): 密码。只有密码对了才能成功更改。 必填参数
+    总结: 更具老师的名称或者id来查找需要更改老师，并且传入哪些新的值，服务器就会更改哪些值。
+
+接口/teachers/delete DELETE请求方式
+  作用：从服务器删除一个老师
+  参数(Json格式)
+  name: 需要删除老师的名称。 可选参数。
+  id: 需要删除老师的ID。 可选参数(但是name或者id必须要有一个传入，两个都传入以id号作为查找方式)
+  code (string类型): 密码。只有密码对了才能删除。 必填参数
+
+  ###############################################################################################################
