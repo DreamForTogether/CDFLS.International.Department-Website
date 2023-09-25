@@ -223,7 +223,6 @@ class teacher
                             $set:
                             {
                                 name: newName != null ? newName : certainTeacher.name,
-                                id: certainTeacher.id,
                                 avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
                                 description: newDescription != null ? newDescription : certainTeacher.description,
                                 type: newType != null ? newType : certainTeacher.type,
@@ -249,7 +248,6 @@ class teacher
                             $set:
                             {
                                 name: newName != null ? newName : certainTeacher.name,
-                                id: certainTeacher.id,
                                 avatarsUrl: newAvatarsUrl != null ? newAvatarsUrl : certainTeacher.avatarsUrl,
                                 description: newDescription != null ? newDescription : certainTeacher.description,
                                 type: newType != null ? newType : certainTeacher.type,
