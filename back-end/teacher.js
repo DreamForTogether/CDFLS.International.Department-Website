@@ -21,7 +21,7 @@ const teachersSchema = new mongoose.Schema({
 });
 const teachers = mongoose.model("teachers", teachersSchema);
 // MongoDB connection URL
-const connectUrl = "xxxxxxxxxxxxxxxxxxxx";
+const connectUrl = "";
 
 app.use(express.json());
 app.use(cors());
@@ -210,7 +210,7 @@ class teacher
             {
                 if (originalId != null)
                 {
-                    const certainTeacher = await teachers.findOne({id: originalId});
+                    const certainTeacher = await teachers.findOne({id:originalId});
                     if (!certainTeacher)
                     {
                         returnJson.error_msg = "Cannot find the teacher";
@@ -218,7 +218,7 @@ class teacher
                     }
                     else
                     {
-                        await teachers.findOneAndUpdate({id: originalId},
+                        await teachers.findOneAndUpdate({id:originalId},
                         {
                             $set:
                             {
@@ -235,7 +235,7 @@ class teacher
                 }
                 else if (originalName != null)
                 {
-                    const certainTeacher = await teachers.findOne({ name: originalName });
+                    const certainTeacher = await teachers.findOne({name:originalName});
                     if (!certainTeacher)
                     {
                         returnJson.error_msg = "Cannot find the teacher";
@@ -243,7 +243,7 @@ class teacher
                     }
                     else
                     {
-                        await teachers.findOneAndUpdate({ name: originalName },
+                        await teachers.findOneAndUpdate({name:originalName},
                         {
                             $set:
                             {
