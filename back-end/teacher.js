@@ -140,8 +140,12 @@ class teacher
             {returnJson.error_msg = "The parameter (name) is required"; returnJson.phase = "Cannot create a teacher";}
             else if (type == null)
             {returnJson.error_msg = "The parameter (type) is required"; returnJson.phase = "Cannot create a teacher";}
+            else if (!Array.isArray(type))
+            {returnJson.error_msg = "The parameter (type) must be an array"; returnJson.phase = "Cannot create a teacher";}
             else if (classesId == null)
             {returnJson.error_msg = "The parameter (classesId) is required"; returnJson.phase = "Cannot create a teacher";}
+            else if (!Array.isArray(classesId))
+            {returnJson.error_msg = "The parameter (classesId) must be an array"; returnJson.phase = "Cannot create a teacher";}
             else if (code == null)
             {returnJson.error_msg = "The parameter (code) is required"; returnJson.phase = "Cannot create a teacher";}
             else if (code == newTeacher)
@@ -159,7 +163,7 @@ class teacher
                 }
                 for (let i = 0; i < idList.length - 1; i++)
                 {
-                    if (idList[i + 1] - idList[i] !== 1)
+                    if (idList[i + 1] - idList[i] != 1)
                     {
                         newId = idList[i] + 1;
                         break;
@@ -197,25 +201,20 @@ class teacher
             var {originalName, originalId, newName, newAvatarsUrl, newDescription, newType, newClassesId, code} = req.body;
             var returnJson = {error_msg:"", phase:""};
             if (originalId == null && originalName == null)
-            {
-                returnJson.error_msg = "The parameter (originalName or originalId) is required";
-                returnJson.phase = "Cannot update the teacher";
-            }
+            {returnJson.error_msg = "The parameter (originalName or originalId) is required"; returnJson.phase = "Cannot update the teacher";}
+            else if (newType != null && !Array.isArray(newType))
+            {returnJson.error_msg = "The parameter (newType) must be an Array"; returnJson.phase = "Cannot update the teacher";}
+            else if (newClassesId != null && !Array.isArray(newClassesId))
+            {returnJson.error_msg = "The parameter (newClassesId) must be an Array"; returnJson.phase = "Cannot update the teacher";}
             else if (code == null)
-            {
-                returnJson.error_msg = "The parameter (code) is required";
-                returnJson.phase = "Cannot update the teacher";
-            }
+            {returnJson.error_msg = "The parameter (code) is required"; returnJson.phase = "Cannot update the teacher";}
             else if (code == updateTeacher)
             {
                 if (originalId != null)
                 {
                     const certainTeacher = await teachers.findOne({id:originalId});
                     if (!certainTeacher)
-                    {
-                        returnJson.error_msg = "Cannot find the teacher";
-                        returnJson.phase = "Cannot update the teacher";
-                    }
+                    {returnJson.error_msg = "Cannot find the teacher"; returnJson.phase = "Cannot update the teacher";}
                     else
                     {
                         await teachers.findOneAndUpdate({id:originalId},
@@ -237,10 +236,7 @@ class teacher
                 {
                     const certainTeacher = await teachers.findOne({name:originalName});
                     if (!certainTeacher)
-                    {
-                        returnJson.error_msg = "Cannot find the teacher";
-                        returnJson.phase = "Cannot update the teacher";
-                    }
+                    {returnJson.error_msg = "Cannot find the teacher"; returnJson.phase = "Cannot update the teacher";}
                     else
                     {
                         await teachers.findOneAndUpdate({name:originalName},
