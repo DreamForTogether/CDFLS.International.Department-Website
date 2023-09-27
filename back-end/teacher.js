@@ -307,7 +307,7 @@ class teacher
             }
             else
             {
-                returnJson.error_msg = "The code is Invalid";
+                returnJson.error_msg = "The code is invalid";
                 returnJson.phase = "Cannot delete the teacher";
             }
 
