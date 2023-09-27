@@ -22,7 +22,7 @@ const coursesSchema = new mongoose.Schema({
 });
 const courses = mongoose.model("courses", coursesSchema);
 // MongoDB connection URL
-const connectUrl ="mongodb+srv://3564028649:JuZOZdN8WLlCONx8@gratiano.iuy275q.mongodb.net/cflswebsite";
+const connectUrl ="";
 
 app.use(express.json());
 app.use(cors());
