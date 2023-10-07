@@ -26,8 +26,46 @@ teacher类里面的方法
   update(req, res)
     异步函数，用来给在服务器特定的teacher更新资料
   delete(req, res)
-    异步函数，用来给z哎服务器的特定老师进行删除删除
+    异步函数，用来给z哎服务器的特定teacher进行删除删除
   
 module.exports = teacher;
+
+###############################################################################################################
+
+course.js 里面含有course这个类
+  
+course类的属性：
+  name 课程名称 类型string
+  cn_name 课程的中文名称 类型string
+  description 课程的介绍 类型string
+  type 课程的类型 类型string
+    具体可以包含的值:
+      ap: ap课程
+      ALevel: alevel课程
+      SinoC: 中加课程
+  attribute 课程的类型 类型string[]
+    具体可以包含的值:
+      standard: 标化课程
+      math: 数学类课程
+      science: 科学类课程
+      liberal: 文学类课程
+      art: 艺术类课程
+      economy: 经济类课程  
+  syllabus 课程的大纲 类型string[]
+  teacherId 所有任课老师的Id 类型int[]
+
+course类里面的方法
+  read(req, res)
+    异步函数，用来从服务器筛选符合条件的course并且添加到接口
+  smartBox(req, res)
+    异步函数，用来显示提示的搜索词
+  create()
+    异步函数，用来给服务器添加course
+  update(req, res)
+    异步函数，用来给在服务器特定的course更新资料
+  delete(req, res)
+    异步函数，用来给z哎服务器的特定course进行删除删除
+
+module.exports = course;
 
 ###############################################################################################################
